@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+    <springProperty name="LOG_PATH" source="logging.file.path"/>
+    <springProperty name="LOG_FILE_NAME" source="logging.file.name"/>
+
+    <springProfile name="dev">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <Pattern>%boldGreen(%d) %highlight(%5p) %cyan([%c]) %m%n</Pattern>
+            </encoder>
+        </appender>
+        <!-- sql log는 카테고리(클래스경로) 생략-->
+        <appender name="sqlLog" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <Pattern>%boldGreen(%d) %highlight(%5p) %m%n</Pattern>
+            </encoder>
+        </appender>
+        <logger name="kr" level="DEBUG" appender-ref="console" />
+        <logger name="jdbc.sqlonly" level="INFO" appender-ref="sqlLog" />
+        <logger name="jdbc.sqltiming" level="INFO" appender-ref="sqlLog" />
+        <logger name="jdbc.resultsettable" level="INFO" appender-ref="sqlLog" />
+        <logger name="org.springframework" level="error" />
+        <logger name="org.springframework.jdbc" level="error" />
+        <root level="INFO">
+            <appender-ref ref="console" />
+        </root>
+    </springProfile>
+
+    <springProfile name="prd">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <Pattern>%boldGreen(%d) %highlight(%5p) %cyan([%c]) %m%n</Pattern>
+            </encoder>
+        </appender>
+        <!-- INFO 이상인경우 카테고리(클래스경로) 생략-->
+        <appender name="sqlLog" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <Pattern>%boldGreen(%d) %highlight(%5p) %m%n</Pattern>
+            </encoder>
+        </appender>
+        <appender name="errorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level> <!-- 로그 레벨이 error 인 경우에만 -->
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread] %logger{36} - %msg%n</pattern>
+            </encoder>
+
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.error.%d{yyyy-MM-dd, Asia/Seoul}.log</fileNamePattern>
+                <maxHistory>10</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+        <appender name="infoLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level> <!-- 로그 레벨이 info 이상인 경우에만 (trace, debug 제외)-->
+            </filter>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread] %logger{36} - %msg%n</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd, Asia/Seoul}.log</fileNamePattern>
+                <maxHistory>20</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+        <!-- 로거 -->
+        <logger name="kr.movements.smv2" level="DEBUG" appender-ref="console"/>
+        <!-- log4jdbc-log4j2 start -->
+        <logger name="jdbc.sqlonly" level="INFO" appender-ref="sqlLog"/>
+        <logger name="jdbc.sqltiming" level="INFO" appender-ref="sqlLog"/>
+        <logger name="jdbc.resultsettable" level="INFO" appender-ref="sqlLog"/>
+        <!-- log4jdbc-log4j2 end -->
+        <logger name="org.springframework" level="ERROR"/>
+        <logger name="org.springframework.jdbc" level="ERROR"/>
+        <!-- 루트 로거 -->
+        <root level="ERROR">
+            <appender-ref ref="console"/>
+            <appender-ref ref="errorLogFile"/>
+            <appender-ref ref="infoLogFile"/>
+        </root>
+    </springProfile>
+</configuration>

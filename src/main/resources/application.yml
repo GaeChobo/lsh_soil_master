@@ -1,0 +1,146 @@
+
+email:
+  sender: mv.product0524@gmail.com
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    context-path: /sm-v2
+#    context-path: /
+  tomcat:
+    max-threads: 200
+    max-swallow-size: -1 # request body size
+  name : sm_v2
+  address: 0.0.0.0
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIA2AZDTFVMPRD3XAWV
+      secretKey: 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
+    s3:
+      bucket: soilmaster-bucket
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+      auto : false
+
+spring:
+  mail :
+    host : smtp.daum.net
+    port : 465
+    username : lsh.mv@movements.kr
+    password : 940517zxc!@#
+    properties :
+      mail :
+        smtp :
+          auth : true
+          ssl :
+            enable : true
+            trust : smtp.daum.net
+  profiles:
+    active: dev
+#    include: oauth
+  datasource:
+    url: jdbc:postgresql://52.78.13.211:5432/soil_master #개발서버
+#    url: jdbc:postgresql://43.202.53.107:5432/soil_master #운영서버
+    driver-class-name: org.postgresql.Driver
+    username: movements
+    password: move123
+  #      connection-test-query: SELECT 1
+  #      allow-pool-suspension: true
+  #      connection-timeout: 6000
+  #      maximum-pool-size: 8
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: none # create, create-drop, update, validate, none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+#        dialect: org.hibernate.spatial.dialect.oracle.OracleSpatial10gDialect
+#        spatial:
+#          connection_finder: com.gscaltex.config.CustomConnectionFinder
+#          ogc_strict: false
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher # solve swagger lib error
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  output:
+    ansi:
+      enabled: always
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao: # {provider-id}
+            client-id: 0027ef587a2306b848347661107822e2
+            client-secret: lqSagcp0zHWG8UcoNCStmIRXuqgLlI0f
+            scope: profile_nickname, account_email
+            client_name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            client-authentication-method: POST
+        provider:
+          kakao: # {provider-id}
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+oauth2:
+  server:
+    url: http://localhost:8080
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true # _ to camelCase transform
+
+logging:
+  file:
+    path: "./logs"
+    name: "sm-v2"
+  level:
+    org:
+      hibernate:
+        type: trace
+
+jwt:
+  access-secret: 1098ade6095e219585bc4679853b631cc8c20ce7a8cbba713e275029f55b971ddc15bfdeb5c9ab666fbb5d9bb9d455599ea0e228f79ea31f84c938f2ca0255a1
+  refresh-secret: 1f7de1ce56383e690f25cd4a206beb2dbc742e1af63e7f116ceaed22cf3aba3cd79b7f63443ff66c3392f0b6bf86b5e93265212d6cd528d960d5d0b6842a7e34
+
+aws:
+  ses:
+    access-key: AKIA2AZDTFVMNMUAPOOH # 액세스 키 ID
+    secret-key: RbOzDEWULv5rKxPBFeT0zEPtRuCXyHkI2oo4I10H # 보안 액세스 키
+
+naver:
+  map:
+    api_key_id: q4ba50imjv
+    api_key: SZE7bQS0rkuoDdYY3r2TdUK4gsdOrEPlog9mdHXj
+  sms:
+    access_key: E8g4oHdHy91dEEVgX66K
+    secret_key: ajOPg65KX9vuYQF5fjGPCvCa7lZvyCNCB3ijQiM7
+    service_id: ncp:sms:kr:263646070462:movements_sms
+    url:
+      host_url: https://sens.apigw.ntruss.com
+      request_url: /sms/v2/services/
+    phone:
+      number: 07077690529
+
+
+oauth:
+  jwt:
+    secret: 1098ade6095e219585bc4679853b631cc8c20ce7a8cbba713e275029f55b971ddc15bfdeb5c9ab666fbb5d9bb9d455599ea0e228f79ea31f84c938f2ca0255a1
+  authorizedRedirectUri: https://kauth.kakao.com/oauth/authorize
